@@ -21,7 +21,14 @@ export function bootService(
     cp.once("message", ({ type, socketPath }: any) => {
       // console.log(type);
       if (type === "http init") urlPaths[config.http.basePath] = socketPath;
+      else if (type === "shutdown") {
+        // reboot service
+        delete urlPaths[config.http.basePath];
 
+        process.nextTick(() => {
+          bootService(service, config, urlPaths);
+        });
+      }
       // console.log(urlPaths);
     });
   }

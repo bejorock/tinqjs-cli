@@ -31,7 +31,7 @@ export default async function build(
       // outfile: path.resolve(rootDir, outDir, "index.ts"),
       format: "cjs",
       platform: "node",
-      target: "es6",
+      target: "esnext",
       inject: [path.resolve(__dirname, "../process-shim.js")],
       watch: onChange
         ? {

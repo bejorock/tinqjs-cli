@@ -8,6 +8,8 @@ const {
   version,
   author,
   keywords,
+  repository,
+  bin,
 } = require("./package.json");
 const { Generator } = require("npm-dts");
 
@@ -32,7 +34,7 @@ async function buildEsm(files_) {
       format: "cjs",
       platform: "node",
       target: "es6",
-      // inject: ["./react-shim.js"],
+      inject: ["./process-shim.js"],
       entryPoints: files_,
       ...esbuildOptions,
     })
@@ -65,6 +67,8 @@ buildEsm(files)
           peerDependencies,
           dependencies,
           keywords,
+          repository,
+          bin,
         },
         null,
         2
@@ -74,5 +78,7 @@ buildEsm(files)
   )
   .then(() => console.log("create package.json"))
   .then(() => fs.copyFileSync("README.md", "dist/README.md"))
+  .then(() => fs.copyFileSync("exec.js", "dist/exec.js"))
+  .then(() => fs.copyFileSync("process-shim.js", "dist/process-shim.js"))
   .catch((err) => console.log(err))
   .finally(() => process.exit(0));

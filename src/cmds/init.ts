@@ -46,7 +46,7 @@ export const handler = function (argv) {
 
   (async () => {
     const rootConfig = JSON.parse(
-      fs.readFileSync(path.resolve("package.json"), "utf-8")
+      fs.readFileSync(path.resolve(__dirname, "package.json"), "utf-8")
     );
 
     console.log(colors.white.bold(`TinQjs Init v${rootConfig.version}`));

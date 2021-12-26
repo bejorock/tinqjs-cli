@@ -121,4 +121,4 @@ tinqjs-service.config.json configuration for a service
 
 ## Examples
 
-Checkout project https://github.com/bejorock/tinqjs-example for samples how to use it
+Checkout project https://github.com/bejorock/tinqjs-example for samples how to use it.

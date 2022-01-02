@@ -33,7 +33,7 @@ async function buildEsm(files_) {
       outfile: "dist/index.js",
       format: "cjs",
       platform: "node",
-      target: "es6",
+      target: "esnext",
       inject: ["./process-shim.js"],
       entryPoints: files_,
       ...esbuildOptions,
@@ -78,7 +78,7 @@ buildEsm(files)
   )
   .then(() => console.log("create package.json"))
   .then(() => fs.copyFileSync("README.md", "dist/README.md"))
-  .then(() => fs.copyFileSync("exec.js", "dist/exec.js"))
+  // .then(() => fs.copyFileSync("exec.js", "dist/exec.js"))
   .then(() => fs.copyFileSync("process-shim.js", "dist/process-shim.js"))
   .catch((err) => console.log(err))
   .finally(() => process.exit(0));

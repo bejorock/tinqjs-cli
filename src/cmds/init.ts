@@ -1,7 +1,5 @@
 import fs from "fs";
 import path from "path";
-import readline from "readline";
-import util from "util";
 import colors from "colors";
 import buildPrompt from "../ask";
 import { MainConfig } from "../types";

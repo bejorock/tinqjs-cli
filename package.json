@@ -1,6 +1,6 @@
 {
   "name": "@tinqjs/tinjs-cli",
-  "version": "0.1.5",
+  "version": "0.1.7",
   "description": "tinq js command line interface",
   "main": "dist/exec.js",
   "author": "bejorock",
@@ -27,7 +27,7 @@
     "@types/yargs": "^17.0.7"
   },
   "bin": {
-    "tinqjs-cli": "./index.js"
+    "tinqjs-cli": "./exec.js"
   },
   "peerDependencies": {},
   "repository": {

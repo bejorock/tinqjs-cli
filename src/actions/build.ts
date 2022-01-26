@@ -20,7 +20,10 @@ export default async function build(
     sourcemap: true,
     plugins: [
       nodeExternalsPlugin(),
-      esbuildPluginDecorator(),
+      esbuildPluginDecorator({
+        compiler: "swc",
+        tsconfigPath: path.resolve(rootDir, "./tsconfig.json"),
+      }),
       importGlobPlugin(),
     ],
   };
@@ -32,7 +35,7 @@ export default async function build(
       format: "cjs",
       platform: "node",
       target: "esnext",
-      inject: [path.resolve(__dirname, "../process-shim.js")],
+      inject: [path.resolve(__dirname, "./process-shim.js")],
       watch: onChange
         ? {
             onRebuild(error, result) {

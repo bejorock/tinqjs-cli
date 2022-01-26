@@ -78,7 +78,7 @@ buildEsm(files)
   )
   .then(() => console.log("create package.json"))
   .then(() => fs.copyFileSync("README.md", "dist/README.md"))
-  // .then(() => fs.copyFileSync("exec.js", "dist/exec.js"))
+  .then(() => fs.copyFileSync("exec.js", "dist/exec.js"))
   .then(() => fs.copyFileSync("process-shim.js", "dist/process-shim.js"))
   .catch((err) => console.log(err))
   .finally(() => process.exit(0));

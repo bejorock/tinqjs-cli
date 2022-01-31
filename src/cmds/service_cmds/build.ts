@@ -4,51 +4,61 @@ import { Generator } from "npm-dts";
 
 import build from "../../actions/build";
 import { ModuleConfig } from "../../types";
+import { logger } from "../../logger";
+
+const getSvcDir = (argv) => {
+  if (!argv.service) return path.resolve(".");
+
+  const baseDir = path.resolve(argv.baseDir);
+  const baseConfig = JSON.parse(
+    fs.readFileSync(path.resolve(baseDir, "tinqjs.config.json"), "utf-8")
+  );
+
+  return path.resolve(
+    baseDir,
+    baseConfig.services.replace("*", ""),
+    argv.service
+  );
+};
 
 export const command = "build [service]";
 
 export const desc = "build service";
 
 export const builder = function (yargs) {
-  return yargs.option("entry", {
-    describe: "main entry",
-    demandOption: false,
-  });
+  return yargs
+    .option("entry", {
+      describe: "main entry",
+      demandOption: false,
+    })
+    .option("modulesDir", {
+      describe: "extra node_modules dir",
+      demandOption: false,
+    });
 };
 
 export const handler = function (argv) {
-  const baseDir = path.resolve(argv.baseDir);
-  const baseConfig = JSON.parse(
-    fs.readFileSync(path.resolve(baseDir, "tinqjs.config.json"), "utf-8")
+  const svcDir = getSvcDir(argv);
+  const svc = JSON.parse(
+    fs.readFileSync(path.resolve(svcDir, "tinqjs-service.config.json"), "utf-8")
   );
 
-  const svcDir = path.resolve(
-    baseDir,
-    baseConfig.services.replace("*", ""),
-    argv.service
-  );
+  if (argv.modulesDir) process.env.MODULES_DIR = argv.modulesDir;
 
   const svcConfig: ModuleConfig = {
     srcDir: "src",
     outDir: "dist",
     entryPoints: ["index.ts"],
-    ...JSON.parse(
-      fs.readFileSync(
-        path.resolve(svcDir, "tinqjs-service.config.json"),
-        "utf-8"
-      )
-    ),
+    ...svc,
     ...(argv.entry ? { entryPoints: [argv.entry] } : {}),
   };
 
   if (svcConfig.noBuild) {
-    console.log("build is disabled", argv.service);
+    logger.info("build is disabled", svc.name);
     return;
   }
 
-  // console.log(svcConfig);
-
-  console.log(`build service`, argv.service);
+  logger.info(`build service`, svc.name);
   build(svcConfig.entryPoints, svcDir, svcConfig.srcDir, svcConfig.outDir)
     .then(() =>
       Promise.all(
@@ -65,16 +75,6 @@ export const handler = function (argv) {
         )
       )
     )
-    .catch((err) => console.log(err))
+    .catch((err) => logger.error(err))
     .finally(() => process.exit());
-
-  /* const svcPackageConfig = JSON.parse(
-    fs.readFileSync(path.resolve(svcDir, "package.json"), "utf-8")
-  );
-
-  console.log(svcPackageConfig); */
-
-  // console.log(baseConfig);
-
-  // console.log(baseDir, process.cwd());
 };

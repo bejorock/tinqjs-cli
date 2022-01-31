@@ -8,6 +8,7 @@ import fs from "fs";
 
 import { ModuleConfig } from "../types";
 import build from "./build";
+import { logger } from "../logger";
 
 const cache: {
   [key: string]: {
@@ -55,7 +56,6 @@ const cache: {
 
     this.watcher
       .on("all", (event, path) => {
-        // console.log(event);
         if (event === "add") this.files.push(path);
 
         if (
@@ -117,7 +117,7 @@ export default function liveReload(
   cache[config.name] = { config, onChange };
 
   if (config.noBuild) {
-    console.log("skipping build", config.name);
+    logger.info("skipping build", config.name);
     return;
   }
 

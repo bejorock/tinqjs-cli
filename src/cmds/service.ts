@@ -1,5 +1,6 @@
 import * as init from "./service_cmds/init";
 import * as build from "./service_cmds/build";
+import { logger } from "../logger";
 
 export const command = "service <command> [options]";
 
@@ -18,5 +19,5 @@ export const builder = function (yargs) {
 };
 
 export const handler = (argv) => {
-  console.log(argv);
+  logger.debug(argv);
 };

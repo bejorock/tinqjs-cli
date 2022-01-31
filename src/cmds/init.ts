@@ -4,6 +4,7 @@ import colors from "colors";
 import buildPrompt from "../ask";
 import { MainConfig } from "../types";
 import tsConfig from "../template/tsconfig";
+import { logger } from "../logger";
 
 export const command = "init [options]";
 
@@ -49,7 +50,6 @@ export const handler = function (argv) {
 
     console.log(colors.white.bold(`TinQjs Init v${rootConfig.version}`));
     const dirPath = path.resolve(argv.baseDir);
-    // console.log(dirPath);
 
     if (fs.existsSync(dirPath)) throw new Error("folder already exists");
 
@@ -118,8 +118,8 @@ export const handler = function (argv) {
         Buffer.from(JSON.stringify(tsConfig, null, 2), "utf-8")
       );
 
-    console.log("init project for dir", dirPath);
+    logger.info("init project for dir", dirPath);
   })()
-    .catch((err) => console.log(err))
+    .catch((err) => logger.error(err))
     .finally(() => process.exit());
 };

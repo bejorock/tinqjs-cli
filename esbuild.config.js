@@ -62,7 +62,7 @@ buildEsm(files)
           version,
           author,
           // module: "lib.esm.js",
-          main: "index.js",
+          main: "exec.js",
           typings: "index.d.ts",
           peerDependencies,
           dependencies,

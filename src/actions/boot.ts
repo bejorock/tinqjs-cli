@@ -7,6 +7,7 @@ import createService from "./createService";
 import { BootOptions, ModuleConfig, Service } from "../types";
 import liveReload from "./liveReload";
 import { ChildProcess } from "child_process";
+import { logger } from "../logger";
 
 export function bootService(
   service: Service,
@@ -19,7 +20,6 @@ export function bootService(
     // wait for http socket
 
     cp.once("message", ({ type, socketPath }: any) => {
-      // console.log(type);
       if (type === "http init") urlPaths[config.http.basePath] = socketPath;
       else if (type === "shutdown") {
         // reboot service
@@ -29,7 +29,6 @@ export function bootService(
           bootService(service, config, urlPaths);
         });
       }
-      // console.log(urlPaths);
     });
   }
 
@@ -62,7 +61,11 @@ export default function boot({ services, http }: BootOptions) {
       // prepare file watcher
       liveReload(config, (result: esbuild.BuildResult) => {
         if (cps[service.name]) {
-          console.log(`Reload module ${service.name}`);
+          logger.info(`Reload module ${service.name}`);
+
+          // delete urlPaths if exists
+          if (config.http) delete urlPaths[config.http.basePath];
+
           if (cps[service.name].connected)
             cps[service.name].send({ type: "shutdown" });
 
@@ -79,8 +82,6 @@ export default function boot({ services, http }: BootOptions) {
   const httpServer = createHttpServer(urlPaths);
 
   httpServer.listen(http.port, () => {
-    console.log(`Http server started at ${http.host}:${http.port}`);
+    logger.info(`Http server started at ${http.host}:${http.port}`);
   });
-
-  console.log(`server ready!`);
 }

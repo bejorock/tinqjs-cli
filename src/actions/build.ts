@@ -2,7 +2,9 @@ import path from "path";
 import { esbuildPluginDecorator } from "esbuild-plugin-decorator";
 import { nodeExternalsPlugin } from "esbuild-node-externals";
 import importGlobPlugin from "esbuild-plugin-import-glob";
+import { globPlugin } from "esbuild-plugin-glob";
 import esbuild from "esbuild";
+import fs from "fs";
 
 export default async function build(
   entryPoints: string[],
@@ -11,7 +13,7 @@ export default async function build(
   outDir: string,
   onChange?: (result: esbuild.BuildResult) => void
 ) {
-  const esbuildOptions = {
+  let esbuildOptions: any = {
     // outfile: "dist/lib.js",
     // outdir: "dist",
     bundle: true,
@@ -19,7 +21,10 @@ export default async function build(
     // format: "esm",
     sourcemap: true,
     plugins: [
-      nodeExternalsPlugin(),
+      // globPlugin(),
+      nodeExternalsPlugin({
+        packagePath: path.resolve(rootDir, "package.json"),
+      }),
       esbuildPluginDecorator({
         compiler: "swc",
         tsconfigPath: path.resolve(rootDir, "./tsconfig.json"),
@@ -28,6 +33,24 @@ export default async function build(
     ],
   };
 
+  // make few modules externals
+  const packageJson = JSON.parse(
+    fs.readFileSync(path.resolve(rootDir, "package.json"), "utf-8")
+  );
+
+  if (packageJson.peerDependencies)
+    esbuildOptions = {
+      ...esbuildOptions,
+      external: Object.keys(packageJson.peerDependencies),
+    };
+
+  /* if (process.env.MODULES_DIR) {
+    esbuildOptions = {
+      ...esbuildOptions,
+      nodePaths: [path.resolve(process.env.MODULES_DIR)],
+    };
+
+  } */
   return await esbuild
     .build({
       outdir: path.resolve(rootDir, outDir),
@@ -46,6 +69,7 @@ export default async function build(
         : undefined,
       absWorkingDir: rootDir,
       entryPoints: entryPoints.map((e) => path.resolve(rootDir, srcDir, e)),
+      // external: ["pg-native"],
       ...esbuildOptions,
     })
     .catch(() => process.exit(1));

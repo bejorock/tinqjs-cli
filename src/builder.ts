@@ -42,7 +42,6 @@ export default class Builder {
 
     this.watcher
       .on("all", (event, path) => {
-        // console.log(event);
         if (event === "add") this.files.push(path);
 
         if (

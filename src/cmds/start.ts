@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import boot from "../actions/boot";
+import { logger } from "../logger";
 import { Lib, MainConfig, Service } from "../types";
 
 export const command = "start [options]";
@@ -22,11 +23,15 @@ export const builder = function (yargs) {
     .option("http.host", {
       describe: "http host",
       demandOption: false,
+    })
+    .option("modulesDir", {
+      describe: "extra node_modules dir",
+      demandOption: false,
     });
 };
 
 export const handler = function (argv) {
-  console.log("starting tinqjs server...", argv.baseDir);
+  logger.info(`starting tinqjs server... ${argv.baseDir}`);
 
   const baseDir = path.resolve(argv.baseDir);
 
@@ -82,10 +87,5 @@ export const handler = function (argv) {
       : {}),
   };
 
-  // console.log(argv);
-
-  // console.log(services);
   boot({ services, http });
-
-  // console.log(svcDir);
 };

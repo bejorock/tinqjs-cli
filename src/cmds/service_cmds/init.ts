@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import buildPrompt from "../../ask";
 import tsConfig from "../../template/tsconfig";
+import { logger } from "../../logger";
 
 export const command = "init <name>";
 
@@ -35,10 +36,8 @@ export const handler = function (argv) {
   const baseSvcDir = path.resolve(baseDir, config.services.replace("*", ""));
   const svcDir = path.resolve(baseSvcDir, argv.name);
 
-  // console.log(argv);
-
   if (fs.existsSync(svcDir)) {
-    console.log("cannot create directory at", svcDir);
+    logger.warn("cannot create directory at", svcDir);
     return;
   }
 
@@ -106,10 +105,8 @@ export const handler = function (argv) {
         JSON.stringify(tsConfig, null, 2)
       );
 
-    // console.log(path.resolve(baseDir, config.services.replace("*", "")));
-
-    console.log("init service", argv.name, "at", path.resolve(svcDir));
+    logger.info("init service", argv.name, "at", path.resolve(svcDir));
   })()
-    .catch((err) => console.log(err))
+    .catch((err) => logger.error(err))
     .finally(() => process.exit());
 };

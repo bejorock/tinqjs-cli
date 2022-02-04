@@ -1,6 +1,6 @@
 {
   "name": "@tinqjs/tinjs-cli",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "tinq js command line interface",
   "main": "dist/exec.js",
   "author": "bejorock",

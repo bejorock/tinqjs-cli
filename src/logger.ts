@@ -4,7 +4,8 @@ export const logger = winston.createLogger({
   level: "info",
   format: winston.format.combine(
     winston.format.colorize({
-      all: true,
+      level: true,
+      message: false,
     }),
     winston.format.label({ label: "tinqjs-cli" }),
     winston.format.timestamp({

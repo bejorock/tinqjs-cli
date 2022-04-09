@@ -27,23 +27,49 @@ const getSocketPath = (
 export default function createHttpServer(urlPaths: string[]) {
   const proxy = httpProxy.createProxyServer({ ws: true });
 
+  const forwarder =
+    (socketPath: string) =>
+    (req, res, counter = 5) => {
+      proxy.web(
+        req,
+        res,
+        {
+          target: { socketPath } as any,
+        },
+        (err) => {
+          logger.error(err);
+
+          if (counter - 1 > 0)
+            setTimeout(() => forwarder(socketPath)(req, res, counter - 1), 100);
+          else {
+            res.statusCode = 500;
+            res.end("Server not ready");
+          }
+        }
+      );
+    };
+
   proxy.on("error", (err) => console.log(err));
   const server = http.createServer((client_req, client_res) => {
     const socketPath = getSocketPath(urlPaths, client_req);
     if (socketPath) {
-      proxy.web(
+      const forward = forwarder(socketPath);
+
+      forward(client_req, client_res);
+      /* proxy.web(
         client_req,
         client_res,
         {
           target: { socketPath: socketPath } as any,
         },
         (err) => {
+          console.log(err);
           logger.error(err);
 
           client_res.statusCode = 500;
           client_res.end("Server not ready");
         }
-      );
+      ); */
     } else {
       client_res.statusCode = 404;
       client_res.end("Page Not Found");
